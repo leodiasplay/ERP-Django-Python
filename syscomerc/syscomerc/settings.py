@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     
     # Apps do projeto
     'cliente',
+    'usuario',
 ]
 
 # =============

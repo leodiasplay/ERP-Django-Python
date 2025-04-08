@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerenciamento de Permissões</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    .formulario{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 50px;
+    }
+
+    .card {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+    }
+
+    .card-header {
+      background-color: #212529;
+    }
+
+    .form-label, #COD_USUARIO {
+      color: #ffffff;
+    }
+
+    .form-control {
+      background-color: #2c2c2c;
+      color: #ffffff;
+      border: 1px solid #444;
+      border-radius: 0.375rem;
+ 
+    }
+
+    .form-control:focus {
+      background-color: #333;
+      color: white;
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(94, 94, 94, 0.5);
+    }
+
+    input::placeholder {
+      color: rgb(220, 220, 220);
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-light {
+      background-color: #343a40;
+      border: 1px solid #444;
+    }
+
+    .btn-light:hover {
+      background-color: #495057;
+    }
+
+    .btn-custom {
+      margin-top: 5px;
+      width: 150px;
+      height: 40px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .divider {
+      margin: 20px 0;
+      border-bottom: 2px solid #444;
+    }
+
+    #bt_cadastrar {
+      background-color: #013870;
+    }
+
+    #btnCancelar {
+      background-color: #a55200;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: #222;
+    }
+
+    .modal-content {
+      background-color: #1e1e1e;
+    }
+
+    .modal-header, .modal-footer {
+      background-color: #212529;
+    }
+
+    .table th, .table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+    
+    .form-select {
+      background-color: #2c2c2c;
+      border: 1px solid #444;
+    }
+    
+    .status-active {
+      color: #4caf50;
+    }
+    
+    .status-inactive {
+      color: #f44336;
+    }
+    
+    .user-info {
+      background-color: #2a2a2a;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    #permissoesTable tbody tr:hover {
+      background-color: #333 !important;
+    }
+    
+    .no-permissions {
+      text-align: center;
+      padding: 20px;
+      font-style: italic;
+    }
+    
+    h1, h2, h3, h4, h5, h6, p, span, a, td, th, label, small {
+      color: #ffffff !important;
+    }
+    
+    .bi, .btn-close {
+      filter: invert(1) brightness(2);
+    }
+    
+    .dropdown-menu {
+      background-color: #2c2c2c;
+    }
+    
+    .dropdown-item {
+      color: #ffffff;
+    }
+    
+    .dropdown-item:hover {
+      background-color: #3d3d3d;
+    }
+  </style>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+  <div class="formulario">
+    <div class="container mt-4">
+        <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Gerenciamento de Permissões de Usuário</h5>
+        </div>
+        <div class="card-body">
+            <!-- Formulário de busca do usuário -->
+            <form id="buscaUsuarioForm" class="mb-4">
+              <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                  <label class="form-label">Digite o código do usuário:</label>
+                  <input type="number" class="form-control" id="codUsuarioInput" placeholder="Código do usuário" required />
+                </div>
+                <div class="col-md-2">
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Buscar
+                  </button>
+                </div>
+                <div class="col-md-6 text-end">
+                  <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalPesquisaUsuarios">
+                    <i class="bi bi-people-fill"></i> Pesquisar Usuários
+                  </button>
+                </div>
+              </div>
+            </form>
+            
+            <!-- Área de informações do usuário -->
+            <div id="userInfoArea" class="user-info" style="display: none;">
+              <div class="row">
+                <div class="col-md-6">
+                  <h5><span id="userName">Nome do Usuário</span> (<span id="userId">0</span>)</h5>
+                  <p class="mb-1"><strong>E-mail:</strong> <span id="userEmail">email@exemplo.com</span></p>
+                  <p class="mb-0"><strong>Nível:</strong> <span id="userLevel">Administrador</span></p>
+                </div>
+                <div class="col-md-6 text-end">
+                  <p class="mb-1"><strong>Último acesso:</strong> <span id="userLastAccess">01/01/2023</span></p>
+                  <p class="mb-0"><strong>Status:</strong> <span id="userStatus" class="status-active">Ativo</span></p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Tabela de permissões existentes -->
+            <div id="permissoesContainer" style="display: none;">
+              <h5 class="mb-3">Permissões Atuais</h5>
+              <div class="table-responsive">
+                <table class="table table-dark table-striped" id="permissoesTable">
+                  <thead>
+                    <tr>
+                      <th>ID Permissão</th>
+                      <th>Nome da Permissão</th>
+                      <th>Data de Concessão</th>
+                      <th>Status</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Linhas serão preenchidas dinamicamente -->
+                  </tbody>
+                </table>
+                <div id="noPermissionsMessage" class="no-permissions">
+                  Este usuário não possui nenhuma permissão cadastrada.
+                </div>
+              </div>
+              
+              <div class="divider"></div>
+              
+              <!-- Formulário para adicionar nova permissão -->
+              <h5 class="mb-3">Adicionar Nova Permissão</h5>
+              <form id="novaPermissaoForm" class="row g-3">
+                <input type="hidden" id="usuarioIdHidden" value="" />
+                
+                <div class="col-md-5">
+                  <label class="form-label">Permissão:</label>
+                  <select class="form-select" id="novaPermissaoSelect" required>
+                    <option value="">Selecione uma permissão</option>
+                    <option value="1">Administrador do Sistema</option>
+                    <option value="2">Acesso ao Financeiro</option>
+                    <option value="3">Acesso ao RH</option>
+                    <option value="4">Acesso aos Relatórios</option>
+                    <option value="5">Cadastro de Produtos</option>
+                    <option value="6">Gestão de Pedidos</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-3">
+                  <label class="form-label">Data de Inclusão:</label>
+                  <input type="date" class="form-control" id="novaPermissaoData" required />
+                </div>
+                
+                <div class="col-md-2">
+                  <label class="form-label">Status:</label>
+                  <select class="form-select" id="novaPermissaoStatus" required>
+                    <option value="1">Ativo</option>
+                    <option value="0">Inativo</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-plus-circle"></i> Adicionar
+                  </button>
+                </div>
+                
+                <div class="col-12">
+                  <label class="form-label">Observação:</label>
+                  <textarea class="form-control" id="novaPermissaoObs" rows="2" placeholder="Opcional"></textarea>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+
+  <!-- Modal de pesquisa de usuários -->
+  <div class="modal fade" id="modalPesquisaUsuarios" tabindex="-1" aria-labelledby="modalPesquisaUsuariosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title">Pesquisar Usuários</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Busque pelo nome:</label>
+              <input type="text" class="form-control bg-dark border-light" id="pesquisaUsuarioNome" placeholder="Digite o nome do usuário..." />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Filtrar por status:</label>
+              <select class="form-select bg-dark border-light" id="pesquisaUsuarioStatus">
+                <option value="">Todos</option>
+                <option value="1">Ativos</option>
+                <option value="0">Inativos</option>
+              </select>
+            </div>
+          </div>
+
+          <hr class="border-light" />
+
+          <div class="table-responsive">
+            <table class="table table-dark table-striped mt-3" id="tabelaUsuarios">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome</th>
+                  <th>Login</th>
+                  <th>E-mail</th>
+                  <th>Status</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Administrador do Sistema</td>
+                  <td>admin</td>
+                  <td>admin@empresa.com</td>
+                  <td><span class="status-active">Ativo</span></td>
+                  <td><button class="btn btn-primary btn-sm btn-selecionar" data-userid="1">Selecionar</button></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Usuário Teste</td>
+                  <td>teste</td>
+                  <td>teste@empresa.com</td>
+                  <td><span class="status-active">Ativo</span></td>
+                  <td><button class="btn btn-primary btn-sm btn-selecionar" data-userid="2">Selecionar</button></td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Usuário Inativo</td>
+                  <td>inativo</td>
+                  <td>inativo@empresa.com</td>
+                  <td><span class="status-inactive">Inativo</span></td>
+                  <td><button class="btn btn-primary btn-sm btn-selecionar" data-userid="3">Selecionar</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmação -->
+  <div class="modal fade" id="modalConfirmacao" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar Ação</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <p id="confirmacaoMensagem">Tem certeza que deseja remover esta permissão?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirmarAcao">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Variáveis globais
+    let usuarioSelecionado = null;
+    let permissaoParaRemover = null;
+    
+    // Document ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Formulário de busca de usuário
+      document.getElementById('buscaUsuarioForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const codUsuario = document.getElementById('codUsuarioInput').value;
+        
+        if (codUsuario) {
+          buscarUsuario(codUsuario);
+        }
+      });
+      
+      // Formulário de adição de nova permissão
+      document.getElementById('novaPermissaoForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        adicionarPermissao();
+      });
+      
+      // Botão de confirmação no modal
+      document.getElementById('confirmarAcao').addEventListener('click', function() {
+        if (permissaoParaRemover) {
+          removerPermissao(permissaoParaRemover);
+        }
+      });
+      
+      // Eventos do modal de pesquisa de usuários
+      document.getElementById('pesquisaUsuarioNome').addEventListener('input', filtrarUsuarios);
+      document.getElementById('pesquisaUsuarioStatus').addEventListener('change', filtrarUsuarios);
+      
+      // Simular dados iniciais
+      carregarDadosIniciais();
+    });
+    
+    // Função para buscar usuário
+    function buscarUsuario(codUsuario) {
+      // Simulação de busca - na prática seria uma chamada AJAX
+      console.log(`Buscando usuário com código: ${codUsuario}`);
+      
+      // Simulação de resposta do servidor
+      const usuarios = [
+        { id: 1, nome: "Administrador do Sistema", email: "admin@empresa.com", nivel: "Administrador", ultimoAcesso: "10/06/2023", status: 1 },
+        { id: 2, nome: "Usuário Teste", email: "teste@empresa.com", nivel: "Usuário", ultimoAcesso: "05/06/2023", status: 1 },
+        { id: 3, nome: "Usuário Inativo", email: "inativo@empresa.com", nivel: "Usuário", ultimoAcesso: "15/05/2023", status: 0 }
+      ];
+      
+      const usuarioEncontrado = usuarios.find(u => u.id == codUsuario);
+      
+      if (usuarioEncontrado) {
+        exibirUsuario(usuarioEncontrado);
+        carregarPermissoesUsuario(usuarioEncontrado.id);
+      } else {
+        alert('Usuário não encontrado!');
+      }
+    }
+    
+    // Função para exibir informações do usuário
+    function exibirUsuario(usuario) {
+      usuarioSelecionado = usuario;
+      
+      document.getElementById('userName').textContent = usuario.nome;
+      document.getElementById('userId').textContent = usuario.id;
+      document.getElementById('userEmail').textContent = usuario.email;
+      document.getElementById('userLevel').textContent = usuario.nivel;
+      document.getElementById('userLastAccess').textContent = usuario.ultimoAcesso;
+      
+      const statusElement = document.getElementById('userStatus');
+      statusElement.textContent = usuario.status ? 'Ativo' : 'Inativo';
+      statusElement.className = usuario.status ? 'status-active' : 'status-inactive';
+      
+      document.getElementById('userInfoArea').style.display = 'block';
+      document.getElementById('usuarioIdHidden').value = usuario.id;
+    }
+    
+    // Função para carregar permissões do usuário
+    function carregarPermissoesUsuario(usuarioId) {
+      // Simulação de busca - na prática seria uma chamada AJAX
+      console.log(`Buscando permissões para usuário: ${usuarioId}`);
+      
+      // Simulação de permissões
+      const permissoes = [
+        { id: 1, usuarioId: 1, permissaoId: 1, nome: "Administrador do Sistema", data: "01/01/2023", status: 1, obs: "" },
+        { id: 2, usuarioId: 1, permissaoId: 2, nome: "Acesso ao Financeiro", data: "15/02/2023", status: 1, obs: "Acesso concedido para fechamento mensal" },
+        { id: 3, usuarioId: 2, permissaoId: 3, nome: "Acesso ao RH", data: "10/03/2023", status: 0, obs: "Acesso temporário" }
+      ];
+      
+      const permissoesUsuario = permissoes.filter(p => p.usuarioId == usuarioId);
+      exibirPermissoes(permissoesUsuario);
+    }
+    
+    // Função para exibir permissões na tabela
+    function exibirPermissoes(permissoes) {
+      const tbody = document.querySelector('#permissoesTable tbody');
+      tbody.innerHTML = '';
+      
+      if (permissoes.length > 0) {
+        document.getElementById('noPermissionsMessage').style.display = 'none';
+        
+        permissoes.forEach(permissao => {
+          const tr = document.createElement('tr');
+          
+          tr.innerHTML = `
+            <td>${permissao.permissaoId}</td>
+            <td>${permissao.nome}</td>
+            <td>${permissao.data}</td>
+            <td><span class="${permissao.status ? 'status-active' : 'status-inactive'}">${permissao.status ? 'Ativo' : 'Inativo'}</span></td>
+            <td class="action-buttons">
+              <button class="btn btn-sm btn-warning btn-editar" data-id="${permissao.id}">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-danger btn-remover" data-id="${permissao.id}">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          `;
+          
+          tbody.appendChild(tr);
+        });
+        
+        // Adicionar eventos aos botões
+        document.querySelectorAll('.btn-editar').forEach(btn => {
+          btn.addEventListener('click', function() {
+            editarPermissao(this.getAttribute('data-id'));
+          });
+        });
+        
+        document.querySelectorAll('.btn-remover').forEach(btn => {
+          btn.addEventListener('click', function() {
+            solicitarConfirmacaoRemocao(this.getAttribute('data-id'));
+          });
+        });
+      } else {
+        document.getElementById('noPermissionsMessage').style.display = 'block';
+      }
+      
+      document.getElementById('permissoesContainer').style.display = 'block';
+    }
+    
+    // Função para adicionar nova permissão
+    function adicionarPermissao() {
+      const usuarioId = document.getElementById('usuarioIdHidden').value;
+      const permissaoId = document.getElementById('novaPermissaoSelect').value;
+      const data = document.getElementById('novaPermissaoData').value;
+      const status = document.getElementById('novaPermissaoStatus').value;
+      const obs = document.getElementById('novaPermissaoObs').value;
+      
+      if (!usuarioId || !permissaoId || !data || status === '') {
+        alert('Preencha todos os campos obrigatórios!');
+        return;
+      }
+      
+      // Simulação de envio para o servidor
+      console.log('Adicionando nova permissão:', { usuarioId, permissaoId, data, status, obs });
+      
+      // Simular resposta do servidor
+      const novaPermissao = {
+        id: Math.floor(Math.random() * 1000) + 4, // ID aleatório para simulação
+        usuarioId: parseInt(usuarioId),
+        permissaoId: parseInt(permissaoId),
+        nome: document.getElementById('novaPermissaoSelect').options[document.getElementById('novaPermissaoSelect').selectedIndex].text,
+        data: formatarData(data),
+        status: parseInt(status),
+        obs: obs
+      };
+      
+      // Recarregar permissões (na prática seria uma chamada AJAX para atualizar a lista)
+      carregarPermissoesUsuario(usuarioId);
+      
+      // Limpar formulário
+      document.getElementById('novaPermissaoForm').reset();
+      
+      alert('Permissão adicionada com sucesso!');
+    }
+    
+    // Função para editar permissão
+    function editarPermissao(permissaoId) {
+      // Simulação de busca dos dados da permissão
+      console.log(`Editando permissão com ID: ${permissaoId}`);
+      alert(`Funcionalidade de edição para permissão ${permissaoId} seria implementada aqui.`);
+    }
+    
+    // Função para solicitar confirmação de remoção
+    function solicitarConfirmacaoRemocao(permissaoId) {
+      permissaoParaRemover = permissaoId;
+      document.getElementById('confirmacaoMensagem').textContent = 'Tem certeza que deseja remover esta permissão?';
+      const modalConfirmacao = new bootstrap.Modal(document.getElementById('modalConfirmacao'));
+      modalConfirmacao.show();
+    }
+    
+    // Função para remover permissão
+    function removerPermissao(permissaoId) {
+      // Simulação de remoção no servidor
+      console.log(`Removendo permissão com ID: ${permissaoId}`);
+      
+      // Fechar modal
+      const modalConfirmacao = bootstrap.Modal.getInstance(document.getElementById('modalConfirmacao'));
+      modalConfirmacao.hide();
+      
+      // Recarregar permissões (na prática seria uma chamada AJAX para atualizar a lista)
+      if (usuarioSelecionado) {
+        carregarPermissoesUsuario(usuarioSelecionado.id);
+      }
+      
+      alert('Permissão removida com sucesso!');
+      permissaoParaRemover = null;
+    }
+    
+    // Função para filtrar usuários no modal de pesquisa
+    function filtrarUsuarios() {
+      const termo = document.getElementById('pesquisaUsuarioNome').value.toLowerCase();
+      const status = document.getElementById('pesquisaUsuarioStatus').value;
+      
+      const linhas = document.querySelectorAll('#tabelaUsuarios tbody tr');
+      
+      linhas.forEach(linha => {
+        const nome = linha.cells[1].textContent.toLowerCase();
+        const statusLinha = linha.querySelector('.status-active') ? '1' : '0';
+        
+        const correspondeNome = nome.includes(termo);
+        const correspondeStatus = status === '' || statusLinha === status;
+        
+        linha.style.display = correspondeNome && correspondeStatus ? '' : 'none';
+      });
+    }
+    
+    // Função para carregar dados iniciais (simulação)
+    function carregarDadosIniciais() {
+      // Adicionar eventos aos botões de seleção no modal
+      document.querySelectorAll('.btn-selecionar').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const usuarioId = this.getAttribute('data-userid');
+          document.getElementById('codUsuarioInput').value = usuarioId;
+          
+          // Fechar modal
+          const modalPesquisa = bootstrap.Modal.getInstance(document.getElementById('modalPesquisaUsuarios'));
+          modalPesquisa.hide();
+          
+          // Buscar usuário
+          buscarUsuario(usuarioId);
+        });
+      });
+      
+      // Definir data atual como padrão para nova permissão
+      const hoje = new Date();
+      const dataFormatada = hoje.toISOString().substr(0, 10);
+      document.getElementById('novaPermissaoData').value = dataFormatada;
+    }
+    
+    // Função auxiliar para formatar data
+    function formatarData(dataString) {
+      if (!dataString) return '';
+      
+      const data = new Date(dataString);
+      return data.toLocaleDateString('pt-BR');
+    }
+  </script>
+</body> 
+</html>

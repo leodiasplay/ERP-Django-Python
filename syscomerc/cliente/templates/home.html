@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Gráficos</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .card {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #ffffff;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .filters input {
+      background-color: #2c2c2c;
+      color: #ffffff;
+      border: 1px solid #444;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .filters input:focus {
+      background-color: #333;
+      border-color: #ffffff;
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(94, 94, 94, 0.5);
+    }
+
+    .filters button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .filters button:hover {
+      background-color: #0056b3;
+    }
+
+    .table-wrapper {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    canvas {
+      width: 100% !important;
+      max-width: 100%;
+      height: 180px !important;
+      display: block;
+      margin: auto;
+    }
+
+    #itensMaisVendidosChart {
+      height: 140px !important;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'navbar.html' %}
+
+  <div class="container">
+
+    <!-- 1. Itens Vendidos com Totais e Rolagem -->
+    <div class="card">
+      <h2>Itens Vendidos</h2>
+    
+      <div class="filters">
+        <input type="date" name="data_inicio">
+        <input type="date" name="data_fim">
+        <button>Buscar</button>
+      </div>
+    
+      <div class="table-wrapper">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <thead>
+            <tr style="background-color: #212529; color: #ffffff;">
+              <th style="padding: 10px; border: 1px solid #333;">Item</th>
+              <th style="padding: 10px; border: 1px solid #333;">Descrição</th>
+              <th style="padding: 10px; border: 1px solid #333;">Quantidade</th>
+              <th style="padding: 10px; border: 1px solid #333;">Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background-color: #2c2c2c; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">001</td>
+              <td style="padding: 10px; border: 1px solid #333;">Parafuso M6</td>
+              <td style="padding: 10px; border: 1px solid #333;">10</td>
+              <td style="padding: 10px; border: 1px solid #333;">R$ 15,00</td>
+            </tr>
+            <tr style="background-color: #1e1e1e; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">002</td>
+              <td style="padding: 10px; border: 1px solid #333;">Arruela Zincada</td>
+              <td style="padding: 10px; border: 1px solid #333;">8</td>
+              <td style="padding: 10px; border: 1px solid #333;">R$ 12,00</td>
+            </tr>
+            <tr style="background-color: #1e1e1e; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">002</td>
+              <td style="padding: 10px; border: 1px solid #333;">Arruela Zincada</td>
+              <td style="padding: 10px; border: 1px solid #333;">8</td>
+              <td style="padding: 10px; border: 1px solid #333;">R$ 12,00</td>
+            </tr>
+            <tr style="background-color: #1e1e1e; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">002</td>
+              <td style="padding: 10px; border: 1px solid #333;">Arruela Zincada</td>
+              <td style="padding: 10px; border: 1px solid #333;">8</td>
+              <td style="padding: 10px; border: 1px solid #333;">R$ 12,00</td>
+            </tr>
+            <tr style="background-color: #2c2c2c; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">003</td>
+              <td style="padding: 10px; border: 1px solid #333;">Porca Sextavada</td>
+              <td style="padding: 10px; border: 1px solid #333;">5</td>
+              <td style="padding: 10px; border: 1px solid #333;">R$ 9,00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    
+      <!-- Total separado -->
+      <div style="margin-top: 10px; text-align: right; background-color: #212529; padding: 10px; border-radius: 5px; font-weight: bold;">
+        Total Quantidade: 23 - Total Valor: R$ 36,00
+      </div>
+    </div>
+    
+
+    <!-- 2. Estoque Baixo com Rolagem e Total fora da tabela -->
+    <div class="card">
+      <h2>Estoque Baixo</h2>
+
+      <div class="filters">
+        <input type="text" placeholder="Cod. Item:"> 
+       
+        <button>Buscar</button>
+      </div>
+
+      <div class="table-wrapper">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <thead>
+            <tr style="background-color: #212529; color: #ffffff;">
+              <th style="padding: 10px; border: 1px solid #333;">Cód. Item</th>
+              <th style="padding: 10px; border: 1px solid #333;">Descrição</th>
+              <th style="padding: 10px; border: 1px solid #333;">Quantidade</th>
+              <th style="padding: 10px; border: 1px solid #333;">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background-color: #2c2c2c; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">001</td>
+              <td style="padding: 10px; border: 1px solid #333;">Parafuso M6</td>
+              <td style="padding: 10px; border: 1px solid #333;">4</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Fazer pedido</button>
+              </td>
+            </tr>
+            <tr style="background-color: #1e1e1e; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">002</td>
+              <td style="padding: 10px; border: 1px solid #333;">Arruela Zincada</td>
+              <td style="padding: 10px; border: 1px solid #333;">2</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Fazer pedido</button>
+              </td>
+            </tr>
+            <tr style="background-color: #2c2c2c; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">003</td>
+              <td style="padding: 10px; border: 1px solid #333;">Porca Sextavada</td>
+              <td style="padding: 10px; border: 1px solid #333;">1</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Fazer pedido</button>
+              </td>
+            </tr>
+            <tr style="background-color: #1e1e1e; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">004</td>
+              <td style="padding: 10px; border: 1px solid #333;">Porca Sextavada</td>
+              <td style="padding: 10px; border: 1px solid #333;">1</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Fazer pedido</button>
+              </td>
+            </tr>
+            <tr style="background-color: #2c2c2c; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">005</td>
+              <td style="padding: 10px; border: 1px solid #333;">Porca Sextavada</td>
+              <td style="padding: 10px; border: 1px solid #333;">1</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Fazer pedido</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Total separado -->
+      <div style="margin-top: 10px; text-align: right; background-color: #212529; padding: 10px; border-radius: 5px; font-weight: bold;">
+        Total de Itens com Estoque Baixo: 9
+      </div>
+    </div>
+
+
+    <!-- 3. Compras em Andamento -->
+    <div class="card">
+      <h2>Compras em andamentos</h2>
+      <div class="table-wrapper">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <thead>
+            <tr style="background-color: #212529; color: #ffffff;">
+              <th style="padding: 10px; border: 1px solid #333;">Status</th>
+              <th style="padding: 10px; border: 1px solid #333;">Descrição</th>
+              <th style="padding: 10px; border: 1px solid #333;">Quantidade</th>
+              <th style="padding: 10px; border: 1px solid #333;">Acompanhar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background-color: #2c2c2c; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">
+                <div style="width: 20px; height: 20px; background-color: #ffc107; border-radius: 50%; margin: auto;"></div>
+              </td>
+              <td style="padding: 10px; border: 1px solid #333;">Aguarando Aprovação</td>
+              <td style="padding: 10px; border: 1px solid #333;">12</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Verificar</button>
+              </td>
+            </tr>
+            <tr style="background-color: #1e1e1e; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">
+                <div style="width: 20px; height: 20px; background-color: #17a2b8; border-radius: 50%; margin: auto;"></div>
+              </td>
+              <td style="padding: 10px; border: 1px solid #333;">Aguardando compra</td>
+              <td style="padding: 10px; border: 1px solid #333;">8</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Verificar</button>
+              </td>
+            </tr>
+            <tr style="background-color: #2c2c2c; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">
+                <div style="width: 20px; height: 20px; background-color: #28a745; border-radius: 50%; margin: auto;"></div>
+              </td>
+              <td style="padding: 10px; border: 1px solid #333;">A caminho</td>
+              <td style="padding: 10px; border: 1px solid #333;">5</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Verificar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+   <!-- 4. Vendas em Andamento com Tabela de Quantidade -->
+    <div class="card">
+      <h2>Vendas em Andamento</h2>
+
+      <div class="table-wrapper">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <thead>
+            <tr style="background-color: #212529; color: #ffffff;">
+              <th style="padding: 10px; border: 1px solid #333;">Status</th>
+              <th style="padding: 10px; border: 1px solid #333;">Descrição</th>
+              <th style="padding: 10px; border: 1px solid #333;">Quantidade</th>
+              <th style="padding: 10px; border: 1px solid #333;">Acompanhar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background-color: #2c2c2c; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">
+                <div style="width: 20px; height: 20px; background-color: #ffc107; border-radius: 50%; margin: auto;"></div>
+              </td>
+              <td style="padding: 10px; border: 1px solid #333;">Aguardando aprovação</td>
+              <td style="padding: 10px; border: 1px solid #333;">12</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Verificar</button>
+              </td>
+            </tr>
+            <tr style="background-color: #1e1e1e; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">
+                <div style="width: 20px; height: 20px; background-color: #17a2b8; border-radius: 50%; margin: auto;"></div>
+              </td>
+              <td style="padding: 10px; border: 1px solid #333;">Em preparação</td>
+              <td style="padding: 10px; border: 1px solid #333;">8</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Verificar</button>
+              </td>
+            </tr>
+            <tr style="background-color: #2c2c2c; color: #ffffff;">
+              <td style="padding: 10px; border: 1px solid #333;">
+                <div style="width: 20px; height: 20px; background-color: #28a745; border-radius: 50%; margin: auto;"></div>
+              </td>
+              <td style="padding: 10px; border: 1px solid #333;">A caminho</td>
+              <td style="padding: 10px; border: 1px solid #333;">5</td>
+              <td style="padding: 10px; border: 1px solid #333;">
+                <button style="background-color: #01385b; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">Verificar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+  <script>
+    new Chart(document.getElementById('comprasChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Em aprovação', 'Em cotação', 'Aguardando entrega'],
+        datasets: [{
+          data: [4, 7, 3],
+          backgroundColor: ['#4bc0c0', '#9966ff', '#ff9f40']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: '#e0e0e0'
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -12,6 +12,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('cliente/', include('cliente.urls')),
+    path('', include('cliente.urls')),            # <- cliente
+    path('usuario/', include('usuario.urls')),  # <- usuario
 ]
 
 # Adiciona o suporte a arquivos estáticos apenas em modo de desenvolvimento

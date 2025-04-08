@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pedidos</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    .container {
+      margin-top: 120px;
+    }
+
+    .card {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+    }
+
+    .card-header {
+      background-color: #212529;
+      color: #ffffff;
+    }
+
+    .form-label {
+      color: #ffffff;
+    }
+
+    .form-control {
+      background-color: #2c2c2c;
+      color: #ffffff;
+      border: 1px solid #444;
+      border-radius: 0.375rem;
+    }
+
+    .form-control:focus {
+      background-color: #333;
+      color: #ffffff;
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(94, 94, 94, 0.5);
+    }
+
+    .table th, .table td {
+      text-align: center;
+    }
+
+    .btn-sm {
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-warning {
+      background-color: #ffc107;
+      border: none;
+    }
+
+    .btn-warning:hover {
+      background-color: #e0a800;
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'navbar.html' %}
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <form class="row g-3 align-items-end">
+          <!-- Filtro por Status -->
+          <div class="col-md-3">
+            <label class="form-label" for="status">Filtrar por Status</label>
+            <select class="form-control form-control-sm" id="status">
+              <option value="">Todos</option>
+              <option value="pendente">Pendente</option>
+              <option value="pago">Liberado</option>
+              <option value="caminho">A caminho</option>
+              <option value="entregue">Entregue</option>
+            </select>
+          </div>
+
+          <!-- Filtro por Data -->
+          <div class="col-md-3">
+            <label class="form-label" for="data">Data</label>
+            <input type="date" class="form-control form-control-sm" id="data" />
+          </div>
+
+
+          <!-- Filtro por Telefone (com máscara) -->
+          <div class="col-md-2">
+            <label class="form-label" for="telefone">Telefone</label>
+            <input 
+              type="tel" 
+              class="form-control form-control-sm" 
+              id="telefone" 
+              placeholder="(00) 00000-0000"
+              oninput="this.value = this.value.replace(/\D/g, '')
+                .replace(/(\d{2})(\d)/, '($1) $2')
+                .replace(/(\d{5})(\d)/, '$1-$2')
+                .slice(0, 15);"
+            />
+          </div>
+
+
+          <!-- Botão Filtrar -->
+          <div class="col-md-2 offset-md-2 text-end">
+            <button class="btn btn-primary btn-sm w-100">Filtrar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabela com os Pedidos -->
+      <div class="card-body">
+        <table class="table table-dark table-striped">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Telefone Cliente</th>
+              <th>Nome Entregador</th>
+              <th>Hora</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Pendente</td>
+              <td>(11) 98765-4321</td>
+              <td>João Silva</td>
+              <td>15:30</td>
+              <td><button class="btn btn-warning btn-sm">Ver Detalhes</button></td>
+            </tr>
+            <tr>
+              <td>Pago</td>
+              <td>(21) 99876-5432</td>
+              <td>Maria Oliveira</td>
+              <td>16:00</td>
+              <td><button class="btn btn-warning btn-sm">Ver Detalhes</button></td>
+            </tr>
+            <tr>
+              <td>Cancelado</td>
+              <td>(31) 98765-4321</td>
+              <td>Pedro Souza</td>
+              <td>17:00</td>
+              <td><button class="btn btn-warning btn-sm">Ver Detalhes</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Inputmask para telefone -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.7/inputmask.min.js"></script>
+  <script>
+    // Aplica a máscara ao campo de telefone
+    const telefoneInput = document.getElementById("telefone");
+    const im = new Inputmask("(99)99999-9999");
+    im.mask(telefoneInput);
+  </script>
+
+</body>
+</html>

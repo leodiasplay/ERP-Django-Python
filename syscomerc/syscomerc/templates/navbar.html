@@ -148,7 +148,7 @@
     }
 
     .submodule a:hover {
-      color: #3498db;
+      color: #ffffff;
       font-weight: bold;
     }
 
@@ -179,6 +179,7 @@
 
       .navbar .navbar-container .navbar-brand {
         font-size: 1.2rem;
+        color: #ecf0f1;
       }
 
       .sidebar {
@@ -236,9 +237,8 @@
           <i>▶</i>
         </div>
         <ul class="submodules">
-          <li class="submodule"><a href="#">Pedidos</a></li>
+          <li class="submodule"><a href="">Pedidos</a></li>
           <li class="submodule"><a href="#">Orçamentos</a></li>
-          <li class="submodule"><a href="#">Clientes</a></li>
           <li class="submodule"><a href="#">Comissões</a></li>
         </ul>
       </li>
@@ -258,7 +258,7 @@
           <i>▶</i>
         </div>
         <ul class="submodules">
-          <li class="submodule"><a href="#">Cadastro de Usuários</a></li>
+          <li class="submodule"><a href="{% url 'Usuario_cadastro' %}">Cadastro de Usuários</a></li>
           <li class="submodule"><a href="#">Permissões</a></li>
         </ul>
       </li>
@@ -268,8 +268,8 @@
           <i>▶</i>
         </div>
         <ul class="submodules">
-          <li class="submodule"><a href="#">Cadastro</a></li>
-          <li class="submodule"><a href="#">Consulta</a></li>
+          <li class="submodule"><a href="{% url 'cliente_cadastro' %}">Cadastro de clientes</a>
+          <li class="submodule"><a href="{% url 'cliente_pedidos' %}">Pedido cliente</a></li> 
         </ul>
       </li>
     </ul>
