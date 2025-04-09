@@ -213,7 +213,7 @@
           <i>▶</i>
         </div>
         <ul class="submodules">
-          <li class="submodule"><a href="#">Cadastro de Produtos</a></li>
+          <li class="submodule"><a href="{% url 'Cadastro_item' %}">Cadastro de Produtos</a></li>
           <li class="submodule"><a href="#">Movimentações</a></li>
           <li class="submodule"><a href="#">Inventário</a></li>
           <li class="submodule"><a href="#">Relatórios</a></li>
@@ -258,8 +258,8 @@
           <i>▶</i>
         </div>
         <ul class="submodules">
-          <li class="submodule"><a href="{% url 'Usuario_cadastro' %}">Cadastro de Usuários</a></li>
-          <li class="submodule"><a href="#">Permissões</a></li>
+          <li class="submodule"><a href="{% url 'Usuario_cadastro'  %}">Cadastro de Usuários</a></li>
+          <li class="submodule"><a href="{% url 'Usuario_permicoes' %}">Permissões</a></li>
         </ul>
       </li>
       <li class="module">
